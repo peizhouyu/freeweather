@@ -1,5 +1,6 @@
 package com.free.freeweather.activity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
@@ -23,6 +24,7 @@ import com.bumptech.glide.Glide;
 import com.free.freeweather.R;
 import com.free.freeweather.gson.Forecast;
 import com.free.freeweather.gson.Weather;
+import com.free.freeweather.service.AutoUpdateService;
 import com.free.freeweather.util.HttpUtil;
 import com.free.freeweather.util.Utility;
 import com.free.freeweather.util.queryAPI;
@@ -238,6 +240,8 @@ public class WeatherActivity extends AppCompatActivity {
         carWashText.setText(carWash);
         sportText.setText(sport);
         weatherLayout.setVisibility(View.VISIBLE);
+        Intent intent = new Intent(this, AutoUpdateService.class);
+        startService(intent);
 
     }
 
