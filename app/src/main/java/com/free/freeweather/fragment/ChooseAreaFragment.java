@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.free.freeweather.R;
+import com.free.freeweather.activity.ChooseWeatherActivity;
 import com.free.freeweather.activity.MainActivity;
 import com.free.freeweather.activity.WeatherActivity;
 import com.free.freeweather.db.City;
@@ -96,11 +97,15 @@ public class ChooseAreaFragment extends Fragment {
                         intent.putExtra("weather_id", weatherId);
                         startActivity(intent);
                         getActivity().finish();
-                    } else if (getActivity() instanceof WeatherActivity) {
-                        WeatherActivity activity = (WeatherActivity) getActivity();
-                        activity.drawerLayout.closeDrawers();
-                        activity.swipeRefresh.setRefreshing(true);
-                        activity.requestWeather(weatherId);
+                    } else if (getActivity() instanceof ChooseWeatherActivity) {
+                        Intent intent = new Intent();
+                        intent.putExtra("weather_id", weatherId);
+                        getActivity().setResult(200,intent);
+                        getActivity().finish();
+//                        WeatherActivity activity = (WeatherActivity) getActivity();
+//                        activity.drawerLayout.closeDrawers();
+//                        activity.swipeRefresh.setRefreshing(true);
+//                        activity.requestWeather(weatherId);
                     }
                 }
             }
@@ -112,6 +117,8 @@ public class ChooseAreaFragment extends Fragment {
                     queryCities();
                 } else if (currentLevel == LEVEL_CITY) {
                     queryProvinces();
+                }else if (currentLevel == LEVEL_PROVINCE){
+                    getActivity().finish();
                 }
             }
         });
@@ -123,7 +130,7 @@ public class ChooseAreaFragment extends Fragment {
      */
     private void queryProvinces() {
         titleText.setText("中国");
-        backButton.setVisibility(View.GONE);
+        backButton.setVisibility(View.VISIBLE);
         provinceList = DataSupport.findAll(Province.class);
         if (provinceList.size() > 0) {
             dataList.clear();
@@ -156,7 +163,7 @@ public class ChooseAreaFragment extends Fragment {
             currentLevel = LEVEL_CITY;
         } else {
             int provinceCode = selectedProvince.getProvinceCode();
-            String address = "http://guolin.tech/api/china/" + provinceCode;
+            String address = queryAPI.query1 + provinceCode;
             queryFromServer(address, "city");
         }
     }
@@ -179,7 +186,7 @@ public class ChooseAreaFragment extends Fragment {
         } else {
             int provinceCode = selectedProvince.getProvinceCode();
             int cityCode = selectedCity.getCityCode();
-            String address = "http://guolin.tech/api/china/" + provinceCode + "/" + cityCode;
+            String address = queryAPI.query1 + provinceCode + "/" + cityCode;
             queryFromServer(address, "county");
         }
     }

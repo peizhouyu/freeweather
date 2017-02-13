@@ -241,4 +241,22 @@ public class WeatherActivity extends AppCompatActivity {
         startService(intent);
     }
 
+    //处理由WeatherActivity加载的MenuFragment 启动ChooseWeatherActivity加载的ChooseAreaFragment 运行结束后返回的数据
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //Log.d("123","执行了result方法");
+        switch (requestCode ){
+            case 1:
+                if (resultCode == 200) {
+                    swipeRefresh.setRefreshing(true);
+                    requestWeather(data.getStringExtra("weather_id"));
+                    //Log.d("zhuyu",data.getStringExtra("weather_id"));
+                }
+                break;
+        }
+    }
+
+
+
+
 }

@@ -24,6 +24,10 @@
             android:name=".service.AutoUpdateService"
             android:enabled="true"
             android:exported="true" />
+
+        <activity android:name=".activity.ChooseWeatherActivity" />
+        <activity android:name=".activity.SattingActivity" />
+        <activity android:name=".activity.AboutDeveloperActivity"></activity>
     </application>
 
 </manifest>
