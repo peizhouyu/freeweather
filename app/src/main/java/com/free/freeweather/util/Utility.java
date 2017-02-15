@@ -1,10 +1,12 @@
 package com.free.freeweather.util;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.free.freeweather.db.City;
 import com.free.freeweather.db.County;
 import com.free.freeweather.db.Province;
+import com.free.freeweather.db.WeatherCityCode;
 import com.free.freeweather.gson.Weather;
 import com.google.gson.Gson;
 
@@ -17,6 +19,45 @@ import org.json.JSONObject;
  */
 
 public class Utility {
+    /*
+     *  解析和处理服务器发回的天气预报城市码
+     */
+
+    public static boolean handleWeatherCodeResponse(String response){
+        if (!TextUtils.isEmpty(response)){
+            try {
+                JSONArray allCity = new JSONArray(response);
+                Log.d("pei","数据长度："+allCity.length());
+                for (int i = 0; i < allCity.length(); i++){
+                    JSONObject city = allCity.getJSONObject(i);
+                    WeatherCityCode weatherCityCode = new WeatherCityCode();
+                    weatherCityCode.setWeatherCityId(city.getString("id"));
+                    //Log.d("pei",city.getString("id"));
+//                    weatherCityCode.setCityEn(city.getString("cityEn"));
+                    weatherCityCode.setCityZh(city.getString("cityZh"));
+                    Log.d("zhouyu","城市名称："+weatherCityCode.getCityZh());
+//                    weatherCityCode.setCountryCode(city.getString("countryCode"));
+//                    weatherCityCode.setCountryEn(city.getString("countryEn"));
+//                    weatherCityCode.setCountryZh(city.getString("countryZn"));
+//                    weatherCityCode.setProvinceEn(city.getString("provinceEn"));
+//                    weatherCityCode.setProvinceZh(city.getString("provinceZn"));
+//                    weatherCityCode.setLeaderEn(city.getString("leaderEn"));
+//                    weatherCityCode.setLeaderZh(city.getString("leaderZn"));
+//                    weatherCityCode.setLat(city.getDouble("lat"));
+//                    weatherCityCode.setLon(city.getDouble("lon"));
+                    weatherCityCode.save();
+                    Log.d("pei","第"+i+"条数据存储完成");
+                }
+                Log.d("pei","数据库存储完成");
+                return true;
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+
     /*
      *  解析和处理服务器发回的省级数据
      */

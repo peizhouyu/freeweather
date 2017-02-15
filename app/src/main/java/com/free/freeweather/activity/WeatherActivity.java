@@ -1,5 +1,6 @@
 package com.free.freeweather.activity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -21,16 +22,26 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amap.api.location.AMapLocation;
+import com.amap.api.location.AMapLocationClient;
+import com.amap.api.location.AMapLocationClientOption;
+import com.amap.api.location.AMapLocationListener;
 import com.bumptech.glide.Glide;
 import com.free.freeweather.R;
+import com.free.freeweather.db.WeatherCityCode;
 import com.free.freeweather.gson.Forecast;
 import com.free.freeweather.gson.Weather;
 import com.free.freeweather.service.AutoUpdateService;
 import com.free.freeweather.util.HttpUtil;
+import com.free.freeweather.util.LocationAssist;
 import com.free.freeweather.util.Utility;
+import com.free.freeweather.util.gaoDeSet;
 import com.free.freeweather.util.queryAPI;
 
+import org.litepal.crud.DataSupport;
+
 import java.io.IOException;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -69,7 +80,14 @@ public class WeatherActivity extends AppCompatActivity {
     private Button navButton;
 
     private String mWeatherId;
+    private ProgressDialog progressDialog;
 
+    //  init SDK
+    private AMapLocationClient locationClient = null;
+    private AMapLocationClientOption locationOption = new AMapLocationClientOption();
+
+    private List<WeatherCityCode> weatherCityCodeList;
+    public  String district;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,7 +133,14 @@ public class WeatherActivity extends AppCompatActivity {
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                requestWeather(mWeatherId);
+               // requestWeather(mWeatherId);
+                Toast.makeText(WeatherActivity.this, "正在自动定位，请稍后...", Toast.LENGTH_LONG).show();
+                initLocation();
+                startLocation();
+
+
+                //显示环形进度条
+                showProgressDialog();
             }
         });
         navButton.setOnClickListener(new View.OnClickListener() {
@@ -132,10 +157,112 @@ public class WeatherActivity extends AppCompatActivity {
         }
     }
 
+    private void initLocation() {
+        //初始化client
+        locationClient = new AMapLocationClient(this.getApplicationContext());
+        //设置定位参数
+        locationClient.setLocationOption(gaoDeSet.getDefaultOption());
+        // 设置定位监听
+        locationClient.setLocationListener(locationListener);
+    }
+
+    /**
+     * 定位监听
+     */
+    AMapLocationListener locationListener = new AMapLocationListener() {
+        @Override
+        public void onLocationChanged(AMapLocation loc) {
+            if (null != loc) {
+                //得到结果后即关闭定位刷新
+                stopLocation();
+                System.out.println("得到位置信息");
+
+                //解析定位结果
+                Toast.makeText(WeatherActivity.this,"success",Toast.LENGTH_LONG).show();
+                closeProgressDialog();
+                //获取SDK返回的区名（eg.  兴县）
+
+                district= loc.getDistrict();
+                Log.d("pei","SDK返回的区域信息："+district);
+
+                queryWeatherCodeByDistrict(district);
+            } else {
+                Toast.makeText(WeatherActivity.this,"fail",Toast.LENGTH_LONG).show();
+                Log.d("pei","定位失败");
+            }
+        }
+    };
+
+    /**
+     * 根据GPS获得的区名去查询相应的天气预报码。
+     *
+     */
+    public void queryWeatherCodeByDistrict(String result){
+        Log.d("pei","根据GPS获得的区名去查询相应的天气预报码");
+        Log.d("pei","result的值为："+result);
+        district = result;
+        // System.out.println(weatherCityCodeList.size());
+        weatherCityCodeList  = DataSupport.where("cityZh=?",district).find(WeatherCityCode.class);
+        Log.d("pei","根据名称查询出来的数据大小"+weatherCityCodeList.size());
+       // System.out.println("sadasdasd");
+//        System.out.println(weatherCityCodeList.get(0).getCityZh());
+        // Log.d("zhouyu","根据名称查询出来的id"+weatherCityCodeList.get(1).getCityZh());
+        //String address = queryAPI.getWeatherCityCodeUrl;
+        //queryFromServer(address);
+        if (weatherCityCodeList.size() > 0){
+            mWeatherId = weatherCityCodeList.get(0).getWeatherCityId();
+            Log.d("pei","第一个麻麻："+mWeatherId);
+            requestWeather(mWeatherId);
+
+
+        }else {
+            //数据库无缓存 从服务获取json对应码
+            String address = queryAPI.getWeatherCityCodeUrl;
+            queryFromServer(address);
+        }
+    }
+
+    //从服务器查询json对应码
+    private void queryFromServer(final String address){
+        Log.d("pei","从服务器查询json对应码");
+        HttpUtil.sendOkHttpRequest(address, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        Toast.makeText(WeatherActivity.this, "加载失败", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                boolean resultOk = false;
+                String responseText = response.body().string();
+                resultOk = Utility.handleWeatherCodeResponse(responseText);
+                Log.d("pei","执行到了handleWeatherCodeResponse");
+                if (resultOk){
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            queryWeatherCodeByDistrict(district);
+
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+
     /**
      * 根据天气id请求城市天气信息。
      */
     public void requestWeather(final String weatherId) {
+        Log.d("pei","第二个麻麻："+weatherId);
         String weatherUrl = queryAPI.weatherUrl + weatherId + "&key=" + queryAPI.userKey;
         HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
             @Override
@@ -224,6 +351,7 @@ public class WeatherActivity extends AppCompatActivity {
             infoText.setText(forecast.more.info);
             maxText.setText(forecast.temperature.max);
             minText.setText(forecast.temperature.min);
+            Log.d("pei","下拉刷新");
             forecastLayout.addView(view);
         }
         if (weather.aqi != null) {
@@ -257,6 +385,77 @@ public class WeatherActivity extends AppCompatActivity {
     }
 
 
+
+    /**
+     * 开始定位
+     *
+     * @since 2.8.0
+     * @author hongming.wang
+     *
+     */
+    private void startLocation(){
+
+        // 设置定位参数
+        locationClient.setLocationOption(locationOption);
+        // 启动定位
+        locationClient.startLocation();
+    }
+
+    /**
+     * 停止定位
+     *
+     * @since 2.8.0
+     * @author hongming.wang
+     *
+     */
+    private void stopLocation(){
+        // 停止定位
+        locationClient.stopLocation();
+    }
+
+    /**
+     * 销毁定位
+     *
+     * @since 2.8.0
+     * @author hongming.wang
+     *
+     */
+    private void destroyLocation(){
+        if (null != locationClient) {
+            /**
+             * 如果AMapLocationClient是在当前Activity实例化的，
+             * 在Activity的onDestroy中一定要执行AMapLocationClient的onDestroy
+             */
+            locationClient.onDestroy();
+            locationClient = null;
+            locationOption = null;
+        }
+    }
+
+
+
+    /**
+     * 显示进度对话框
+     */
+    private void showProgressDialog() {
+
+        if (progressDialog == null) {
+            progressDialog = new ProgressDialog(this);
+            progressDialog.setMessage("正在获取您的位置信息...");
+            progressDialog.setCanceledOnTouchOutside(false);
+        }
+        progressDialog.show();
+    }
+
+
+    /**
+     * 关闭进度对话框
+     */
+    private void closeProgressDialog() {
+        if (progressDialog != null) {
+            progressDialog.dismiss();
+        }
+    }
 
 
 }

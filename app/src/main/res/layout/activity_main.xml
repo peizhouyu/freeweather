@@ -4,10 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <fragment
-        android:id="@+id/choose_area_fragment"
+    <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:name="com.free.freeweather.fragment.ChooseAreaFragment"/>
+        android:src="@drawable/main_bg"
+        android:scaleType="centerCrop"/>
 
 </FrameLayout>

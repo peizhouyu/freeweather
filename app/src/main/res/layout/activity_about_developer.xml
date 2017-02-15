@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_about_developer"
     android:layout_width="match_parent"
@@ -8,6 +8,53 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
     tools:context="com.free.freeweather.activity.AboutDeveloperActivity">
 
-</RelativeLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="这是一个激动人心的故事！"
+        android:layout_gravity="center"
+        android:textSize="20dp"
+        android:gravity="center"/>
+
+    <ImageView
+        android:layout_width="240dp"
+        android:layout_height="300dp"
+        android:src="@drawable/shuju"
+        android:layout_gravity="center"
+        android:layout_marginTop="30dp"
+        android:scaleType="centerCrop"
+        android:layout_marginBottom="30dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="向开发者吐槽！"
+        android:layout_gravity="center"
+        android:textSize="20dp"
+        android:gravity="center"
+        android:layout_marginBottom="20dp"
+        android:textColor="@color/colorPrimary"/>
+
+    <EditText
+        android:id="@+id/contentPanel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="请输入您的建议或者QQ联系我：756487195"
+        android:minLines="3"
+        android:background="@drawable/edit_bg"/>
+
+    <Button
+        android:id="@+id/submit_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="发送"/>
+
+
+    
+
+
+</LinearLayout>
