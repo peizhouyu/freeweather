@@ -2,13 +2,14 @@ package com.free.freeweather.gson;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by 裴周宇 on 2017/2/8.
  */
 
-public class Weather {
+public class Weather implements Serializable {
 
     public String status;
 

@@ -17,19 +17,18 @@
     <!-- 不是SDK需要的权限，是示例中的后台唤醒定位需要的权限 -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
-    <!--用于读取手机当前的状态-->
+    <!-- 用于读取手机当前的状态 -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <!-- 更改设置 -->
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
 
-    <!--危险权限需要在运行时申请-->
+    <!-- 危险权限需要在运行时申请 -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-
 
     <application
         android:name="org.litepal.LitePalApplication"
@@ -44,7 +43,7 @@
             android:name="com.amap.api.v2.apikey"
             android:value="68db3edb346b6bd78cb73bc56cad8702" />
         <!-- 定位需要的服务 -->
-        <service android:name="com.amap.api.location.APSService"></service>
+        <service android:name="com.amap.api.location.APSService" />
 
         <activity android:name=".activity.MainActivity">
             <intent-filter>
@@ -63,6 +62,11 @@
         <activity android:name=".activity.ChooseWeatherActivity" />
         <activity android:name=".activity.SattingActivity" />
         <activity android:name=".activity.AboutDeveloperActivity" />
+
+        <service
+            android:name=".service.NotificationService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

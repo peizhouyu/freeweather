@@ -36,17 +36,20 @@ public class Utility {
 //                    weatherCityCode.setCityEn(city.getString("cityEn"));
                     weatherCityCode.setCityZh(city.getString("cityZh"));
                     Log.d("zhouyu","城市名称："+weatherCityCode.getCityZh());
-//                    weatherCityCode.setCountryCode(city.getString("countryCode"));
+ //                   weatherCityCode.setCountryCode(city.getString("countryCode"));
+
 //                    weatherCityCode.setCountryEn(city.getString("countryEn"));
 //                    weatherCityCode.setCountryZh(city.getString("countryZn"));
 //                    weatherCityCode.setProvinceEn(city.getString("provinceEn"));
 //                    weatherCityCode.setProvinceZh(city.getString("provinceZn"));
 //                    weatherCityCode.setLeaderEn(city.getString("leaderEn"));
-//                    weatherCityCode.setLeaderZh(city.getString("leaderZn"));
+                    weatherCityCode.setLeaderZh(city.getString("leaderZh"));
+                    Log.d("zhouyu","上级城市名称："+city.getString("leaderZh"));
+                  //  Log.d("zhouyu","上级城市名称："+weatherCityCode.getCityZh());
 //                    weatherCityCode.setLat(city.getDouble("lat"));
 //                    weatherCityCode.setLon(city.getDouble("lon"));
                     weatherCityCode.save();
-                    Log.d("pei","第"+i+"条数据存储完成");
+                    Log.d("zhouyu","第"+i+"条数据存储完成");
                 }
                 Log.d("pei","数据库存储完成");
                 return true;

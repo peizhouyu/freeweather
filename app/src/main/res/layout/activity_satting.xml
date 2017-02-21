@@ -72,10 +72,21 @@
                 android:layout_marginRight="20dp"/>
 
             <Switch
-                android:text="这个开关以后会用到"
+                android:text="状态栏通知"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/switch4"
+                android:textSize="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"/>
+
+            <Switch
+                android:text="这个开关以后会用到"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/switch5"
                 android:textSize="20dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"

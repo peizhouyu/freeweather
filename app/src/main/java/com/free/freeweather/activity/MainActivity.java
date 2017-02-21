@@ -53,9 +53,12 @@ public class MainActivity extends AppCompatActivity {
     private AMapLocationClient locationClient = null;
     private AMapLocationClientOption locationOption = new AMapLocationClientOption();
 
-    private List<WeatherCityCode> weatherCityCodeList;
-
+    private List<WeatherCityCode> weatherCityCodeListByDistrict;
+    private List<WeatherCityCode> weatherCityCodeListByCity;
+    //GPS获得的区名
     public  String district;
+    //GPS获得的市名
+    public String city;
 
     /**
      * 需要进行检测的权限数组
@@ -183,10 +186,13 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this,"success",Toast.LENGTH_LONG).show();
                 //获取SDK返回的区名（eg.  兴县）
 
-                 district= loc.getDistrict();
+                district= loc.getDistrict();
                 Log.d("pei","SDK返回的区域信息："+district);
-
-                queryWeatherCodeByDistrict(district);
+                city = loc.getCity();
+                //将返回的太原市截取为太原
+                city = city.substring(0,2);
+                Log.d("pei","SDK返回的城市信息："+city);
+                queryWeatherCodeByDistrict(district, city);
                 //queryWeatherCodeByDistrict(district);
             } else {
                 Toast.makeText(MainActivity.this,"fail",Toast.LENGTH_LONG).show();
@@ -199,26 +205,38 @@ public class MainActivity extends AppCompatActivity {
      * 根据GPS获得的区名去查询相应的天气预报码。
      *
      */
-    public void queryWeatherCodeByDistrict(String result){
+    public void queryWeatherCodeByDistrict(String result, String resultExtra){
         Log.d("pei","根据GPS获得的区名去查询相应的天气预报码");
         Log.d("pei","result的值为："+result);
+        Log.d("pei","resultExtra的值为："+resultExtra);
         district = result;
+        city = resultExtra;
         // System.out.println(weatherCityCodeList.size());
-        weatherCityCodeList  = DataSupport.where("cityZh=?",district).find(WeatherCityCode.class);
-        Log.d("pei","根据名称查询出来的数据大小"+weatherCityCodeList.size());
+        weatherCityCodeListByDistrict  = DataSupport.where("cityZh=?",district).find(WeatherCityCode.class);
+        weatherCityCodeListByCity = DataSupport.where("leaderZh=?",city).find(WeatherCityCode.class);
+        Log.d("pei","根据district查询出来的数据大小"+weatherCityCodeListByDistrict.size());
+        Log.d("pei","根据city查询出来的数据大小"+weatherCityCodeListByCity.size());
         System.out.println("sadasdasd");
 //        System.out.println(weatherCityCodeList.get(0).getCityZh());
         // Log.d("zhouyu","根据名称查询出来的id"+weatherCityCodeList.get(1).getCityZh());
         //String address = queryAPI.getWeatherCityCodeUrl;
         //queryFromServer(address);
-        if (weatherCityCodeList.size() > 0){
-            String weatherId = weatherCityCodeList.get(0).getWeatherCityId();
+        if (weatherCityCodeListByDistrict.size() > 0){
+            String weatherId = weatherCityCodeListByDistrict.get(0).getWeatherCityId();
 
             Intent intent = new Intent(MainActivity.this, WeatherActivity.class);
             intent.putExtra("weather_id", weatherId);
             startActivity(intent);
             finish();
-        }else {
+        }else if (weatherCityCodeListByCity.size() > 0){
+            String weatherId = weatherCityCodeListByCity.get(0).getWeatherCityId();
+
+            Intent intent = new Intent(MainActivity.this, WeatherActivity.class);
+            intent.putExtra("weather_id", weatherId);
+            startActivity(intent);
+            finish();
+
+        } else {
             //数据库无缓存 从服务获取json对应码
             String address = queryAPI.getWeatherCityCodeUrl;
             queryFromServer(address);
@@ -251,7 +269,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void run() {
 
-                            queryWeatherCodeByDistrict(district);
+                            queryWeatherCodeByDistrict(district, city);
 
                         }
                     });
