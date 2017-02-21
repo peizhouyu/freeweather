@@ -14,7 +14,7 @@ import android.widget.Toast;
 
 import com.free.freeweather.R;
 
-public class SattingActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener {
+public class SattingActivity extends BasicActivity implements CompoundButton.OnCheckedChangeListener {
 
     private Switch aSwitch1;
     private Switch aSwitch2;

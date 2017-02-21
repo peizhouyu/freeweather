@@ -41,7 +41,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BasicActivity {
     //是否允许自动定位标志变量
     private  boolean userGPS = true;
 

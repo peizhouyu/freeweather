@@ -38,12 +38,17 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <!--高德SDK配置-->
         <!-- 设置key -->
         <meta-data
             android:name="com.amap.api.v2.apikey"
             android:value="68db3edb346b6bd78cb73bc56cad8702" />
         <!-- 定位需要的服务 -->
         <service android:name="com.amap.api.location.APSService" />
+
+        <!--友盟SDK配置-->
+        <meta-data android:value="58ac3d9a7666133d7e001485" android:name="UMENG_APPKEY"/>
+        <meta-data android:value="Wandoujia" android:name="UMENG_CHANNEL"/>
 
         <activity android:name=".activity.MainActivity">
             <intent-filter>

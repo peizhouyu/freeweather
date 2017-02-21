@@ -10,7 +10,7 @@ import android.widget.EditText;
 
 import com.free.freeweather.R;
 
-public class AboutDeveloperActivity extends AppCompatActivity {
+public class AboutDeveloperActivity extends BasicActivity {
 
     private EditText emailText;
     private String emailTextString;

@@ -5,7 +5,7 @@ import android.os.Bundle;
 
 import com.free.freeweather.R;
 
-public class ChooseWeatherActivity extends AppCompatActivity {
+public class ChooseWeatherActivity extends BasicActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

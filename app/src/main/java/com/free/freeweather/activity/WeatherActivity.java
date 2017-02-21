@@ -29,6 +29,7 @@ import com.amap.api.location.AMapLocationListener;
 import com.bumptech.glide.Glide;
 import com.free.freeweather.R;
 import com.free.freeweather.db.WeatherCityCode;
+import com.free.freeweather.gson.Basic;
 import com.free.freeweather.gson.Forecast;
 import com.free.freeweather.gson.Weather;
 import com.free.freeweather.service.AutoUpdateService;
@@ -48,7 +49,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class WeatherActivity extends AppCompatActivity {
+public class WeatherActivity extends BasicActivity {
 
     private ScrollView weatherLayout;
 
