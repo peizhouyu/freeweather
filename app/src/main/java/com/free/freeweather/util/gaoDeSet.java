@@ -17,7 +17,7 @@ public class gaoDeSet {
      *
      */
     public static AMapLocationClientOption getDefaultOption(){
-        Log.d("pei","88888");
+        Log.d("liyifan","读取配置信息");
         AMapLocationClientOption mOption = new AMapLocationClientOption();
         mOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);//可选，设置定位模式，可选的模式有高精度、仅设备、仅网络。默认为高精度模式
         mOption.setGpsFirst(false);//可选，设置是否gps优先，只在高精度模式下有效。默认关闭

@@ -92,13 +92,13 @@ public class MainActivity extends BasicActivity {
         pref = PreferenceManager.getDefaultSharedPreferences(this);
         Boolean isCheckPermission = pref.getBoolean("isCheck_Permission",false);
         if (!isCheckPermission){
-            Log.d("pei","1111111111");
+           // Log.d("pei","1111111111");
             editor = pref.edit();
             editor.putBoolean("isCheck_Permission",true);
             editor.apply();
             checkPermissions(needPermissions);
         }else {
-            Log.d("pei","2222222222");
+           // Log.d("pei","2222222222");
             //调用高德API实现定位服务
             Toast.makeText(this, "正在自动定位，请稍后...", Toast.LENGTH_LONG).show();
             initLocation();
@@ -167,6 +167,7 @@ public class MainActivity extends BasicActivity {
         locationClient.setLocationOption(gaoDeSet.getDefaultOption());
         // 设置定位监听
         locationClient.setLocationListener(locationListener);
+        Log.d("liyifan","initLocation success");
     }
 
 
@@ -175,109 +176,40 @@ public class MainActivity extends BasicActivity {
      * 定位监听
      */
     AMapLocationListener locationListener = new AMapLocationListener() {
+
         @Override
         public void onLocationChanged(AMapLocation loc) {
+            Log.d("liyifan","执行定位监听");
             if (null != loc) {
                 //得到结果后即关闭定位刷新
                 stopLocation();
-                System.out.println("得到位置信息");
+               Log.d("liyifan","得到位置信息");
 
                 //解析定位结果
                 Toast.makeText(MainActivity.this,"success",Toast.LENGTH_LONG).show();
-                //获取SDK返回的区名（eg.  兴县）
+                //获取SDK返回的区名（eg.  太原）
 
                 district= loc.getDistrict();
-                Log.d("pei","SDK返回的区域信息："+district);
+                Log.d("liyifan","SDK返回的区域信息："+district);
                 city = loc.getCity();
+                Log.d("liyifan","SDK返回的城市信息："+city);
                 //将返回的太原市截取为太原
-                city = city.substring(0,2);
-                Log.d("pei","SDK返回的城市信息："+city);
-                queryWeatherCodeByDistrict(district, city);
+//                city = city.substring(0,2);
+//
+//                Log.d("liyifan","SDK返回的城市信息："+city);
+               // queryWeatherCodeByDistrict(district, city);
                 //queryWeatherCodeByDistrict(district);
+
+                Intent intent = new Intent(MainActivity.this, WeatherActivity.class);
+                intent.putExtra("weather_local", "太原");
+                startActivity(intent);
+                finish();
             } else {
                 Toast.makeText(MainActivity.this,"fail",Toast.LENGTH_LONG).show();
                 Log.d("pei","定位失败");
             }
         }
     };
-
-    /**
-     * 根据GPS获得的区名去查询相应的天气预报码。
-     *
-     */
-    public void queryWeatherCodeByDistrict(String result, String resultExtra){
-        Log.d("pei","根据GPS获得的区名去查询相应的天气预报码");
-        Log.d("pei","result的值为："+result);
-        Log.d("pei","resultExtra的值为："+resultExtra);
-        district = result;
-        city = resultExtra;
-        // System.out.println(weatherCityCodeList.size());
-        weatherCityCodeListByDistrict  = DataSupport.where("cityZh=?",district).find(WeatherCityCode.class);
-        weatherCityCodeListByCity = DataSupport.where("leaderZh=?",city).find(WeatherCityCode.class);
-        Log.d("pei","根据district查询出来的数据大小"+weatherCityCodeListByDistrict.size());
-        Log.d("pei","根据city查询出来的数据大小"+weatherCityCodeListByCity.size());
-        System.out.println("sadasdasd");
-//        System.out.println(weatherCityCodeList.get(0).getCityZh());
-        // Log.d("zhouyu","根据名称查询出来的id"+weatherCityCodeList.get(1).getCityZh());
-        //String address = queryAPI.getWeatherCityCodeUrl;
-        //queryFromServer(address);
-        if (weatherCityCodeListByDistrict.size() > 0){
-            String weatherId = weatherCityCodeListByDistrict.get(0).getWeatherCityId();
-
-            Intent intent = new Intent(MainActivity.this, WeatherActivity.class);
-            intent.putExtra("weather_id", weatherId);
-            startActivity(intent);
-            finish();
-        }else if (weatherCityCodeListByCity.size() > 0){
-            String weatherId = weatherCityCodeListByCity.get(0).getWeatherCityId();
-
-            Intent intent = new Intent(MainActivity.this, WeatherActivity.class);
-            intent.putExtra("weather_id", weatherId);
-            startActivity(intent);
-            finish();
-
-        } else {
-            //数据库无缓存 从服务获取json对应码
-            String address = queryAPI.getWeatherCityCodeUrl;
-            queryFromServer(address);
-        }
-    }
-
-    //从服务器查询json对应码
-    private void queryFromServer(final String address){
-        Log.d("pei","从服务器查询json对应码");
-        HttpUtil.sendOkHttpRequest(address, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        Toast.makeText(MainActivity.this, "加载失败", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                boolean resultOk = false;
-                String responseText = response.body().string();
-                resultOk = Utility.handleWeatherCodeResponse(responseText);
-                Log.d("pei","执行到了handleWeatherCodeResponse");
-                if (resultOk){
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            queryWeatherCodeByDistrict(district, city);
-
-                        }
-                    });
-                }
-            }
-        });
-    }
-
 
     /**
      * 开始定位
@@ -292,6 +224,7 @@ public class MainActivity extends BasicActivity {
         locationClient.setLocationOption(locationOption);
         // 启动定位
         locationClient.startLocation();
+        Log.d("liyifan","startLocation success");
     }
 
     /**

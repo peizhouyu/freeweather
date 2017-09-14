@@ -31,7 +31,7 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
-        android:name="org.litepal.LitePalApplication"
+        android:name="com.free.freeweather.activity.MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/logo"
         android:label="@string/app_name"
@@ -48,7 +48,13 @@
 
         <!--友盟SDK配置-->
         <meta-data android:value="58ac3d9a7666133d7e001485" android:name="UMENG_APPKEY"/>
-        <meta-data android:value="Wandoujia" android:name="UMENG_CHANNEL"/>
+        <meta-data android:value="XiaoMi" android:name="UMENG_CHANNEL"/>
+        <!--友盟推送SDK-->
+        <meta-data
+            android:name="UMENG_MESSAGE_SECRET"
+            android:value="d89515ad0733821dbb15508758d18501">
+        </meta-data>
+
 
         <activity android:name=".activity.MainActivity">
             <intent-filter>

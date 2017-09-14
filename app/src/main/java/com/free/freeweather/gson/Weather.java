@@ -2,25 +2,45 @@ package com.free.freeweather.gson;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by 裴周宇 on 2017/2/8.
+ * 项目名： FreeWeather
+ * 包名：   com.free.freeweather.gson
+ * 文件名： Weather
+ * 创建者： 裴周宇
+ * 创建时间： 2017/9/13 15:23
+ * 描述：   TODO
  */
 
-public class Weather implements Serializable {
+public class Weather {
+    @SerializedName("date")
+    public Data data;
+    public Integer status;
+    public String desc;
 
-    public String status;
+    public Data getData() {
+        return data;
+    }
 
-    public Basic basic;
+    public void setData(Data data) {
+        this.data = data;
+    }
 
-    public  AQI aqi;
+    public Integer getStatus() {
+        return status;
+    }
 
-    public Now now;
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
 
-    public Suggestion suggestion;
+    public String getDesc() {
+        return desc;
+    }
 
-    @SerializedName("daily_forecast")
-    public List<Forecast> forecasts;
+    public void setDesc(String desc) {
+        this.desc = desc;
+    }
 }

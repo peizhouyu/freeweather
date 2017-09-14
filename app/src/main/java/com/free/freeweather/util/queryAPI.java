@@ -8,10 +8,14 @@ package com.free.freeweather.util;
 //天气查询API
 public class queryAPI {
     public static final String query1 = "http://guolin.tech/api/china/";
-    public static final String weatherUrl = "http://guolin.tech/api/weather?cityid=";
-    public static final String userKey = "7d65b8f90b9a49b1b4827a4c2ceca51c";
     //获取必应每日一图
     public static final String getBingyingImg = "http://guolin.tech/api/bing_pic";
+
     //和风天气网获取城市名称和天气预报码对应关系的json
+    //已经被弃用  测试时间 2017/9/13
     public static final String getWeatherCityCodeUrl = "http://files.heweather.com/china-city-list.json";
+
+
+    //最新API
+    public static final String queryRes = "http://wthrcdn.etouch.cn/weather_mini?city=";
 }

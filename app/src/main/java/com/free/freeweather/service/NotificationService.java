@@ -5,7 +5,6 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 
@@ -41,10 +40,10 @@ public class NotificationService extends Service {
     }
 
     public void CreateInform(Weather weather) {
-        String cityName = weather.basic.cityName;
-        String updateTime = weather.basic.update.updateTime.split(" ")[1];
-        String degree = weather.now.temperature + "℃";
-        String weatherInfo = weather.now.more.info;
+        String cityName = weather.data.city;
+        String updateTime = weather.data.forecastList.get(0).date;
+        String degree = weather.data.forecastList.get(0).high;
+        String weatherInfo = weather.data.forecastList.get(0).forecastType;
 
         Intent intent = new Intent(context,WeatherActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);

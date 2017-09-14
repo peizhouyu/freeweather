@@ -46,8 +46,8 @@ public class LocationAssist {
         district = result;
         // System.out.println(weatherCityCodeList.size());
         weatherCityCodeList  = DataSupport.where("cityZh=?",district).find(WeatherCityCode.class);
-        Log.d("pei","根据名称查询出来的数据大小"+weatherCityCodeList.size());
-        System.out.println("sadasdasd");
+        Log.d("liyifan","根据名称查询出来的数据大小"+weatherCityCodeList.size());
+
 //        System.out.println(weatherCityCodeList.get(0).getCityZh());
         // Log.d("zhouyu","根据名称查询出来的id"+weatherCityCodeList.get(1).getCityZh());
         //String address = queryAPI.getWeatherCityCodeUrl;

@@ -5,12 +5,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
-import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,13 +27,10 @@ import com.amap.api.location.AMapLocationListener;
 import com.bumptech.glide.Glide;
 import com.free.freeweather.R;
 import com.free.freeweather.db.WeatherCityCode;
-import com.free.freeweather.gson.Basic;
 import com.free.freeweather.gson.Forecast;
 import com.free.freeweather.gson.Weather;
 import com.free.freeweather.service.AutoUpdateService;
-import com.free.freeweather.service.NotificationService;
 import com.free.freeweather.util.HttpUtil;
-import com.free.freeweather.util.LocationAssist;
 import com.free.freeweather.util.Utility;
 import com.free.freeweather.util.gaoDeSet;
 import com.free.freeweather.util.queryAPI;
@@ -81,7 +76,7 @@ public class WeatherActivity extends BasicActivity {
 
     private Button navButton;
 
-    private String mWeatherId;
+    private String mWeatherLocal;
     private ProgressDialog progressDialog;
 
     //  init SDK
@@ -126,15 +121,15 @@ public class WeatherActivity extends BasicActivity {
         if (weatherString != null) {
             // 有缓存时直接解析天气数据
             Weather weather = Utility.handleWeatherResponse(weatherString);
-            mWeatherId = weather.basic.weatherId;
-            Log.d("pei1",weather.basic.weatherId);
+
+            Log.d("matao",weather.getData().getCity());
             showWeatherInfo(weather);
         } else {
             // 无缓存时去服务器查询天气
-            mWeatherId = getIntent().getStringExtra("weather_id");
-            Log.d("pei2",mWeatherId);
+            mWeatherLocal = getIntent().getStringExtra("weather_local");
+            Log.d("matao",mWeatherLocal);
             weatherLayout.setVisibility(View.INVISIBLE);
-            requestWeather(mWeatherId);
+            requestWeather(mWeatherLocal);
         }
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -189,12 +184,13 @@ public class WeatherActivity extends BasicActivity {
                 //获取SDK返回的区名（eg.  兴县）
 
                 district= loc.getDistrict();
-                Log.d("pei","SDK返回的区域信息："+district);
-                city = loc.getCity();
+                Log.d("matao","SDK返回的区域信息："+district);
+                //city = loc.getCity();
                 //将返回的太原市截取为太原
-                city = city.substring(0,2);
-                Log.d("pei","SDK返回的城市信息："+city);
-                queryWeatherCodeByDistrict(district, city);
+               // city = city.substring(0,2);
+                Log.d("matao","SDK返回的城市信息："+city);
+                //queryWeatherCodeByDistrict(district, city);
+                requestWeather(district);
             } else {
                 Toast.makeText(WeatherActivity.this,"fail",Toast.LENGTH_LONG).show();
                 Log.d("pei","定位失败");
@@ -202,94 +198,31 @@ public class WeatherActivity extends BasicActivity {
         }
     };
 
-    /**
-     * 根据GPS获得的区名去查询相应的天气预报码。
-     *
-     */
-    public void queryWeatherCodeByDistrict(String result, String resultExtra){
-        Log.d("pei","根据GPS获得的区名去查询相应的天气预报码");
-        Log.d("pei","result的值为："+result);
-        Log.d("pei","resultExtra的值为："+resultExtra);
-        district = result;
-        city = resultExtra;
-        // System.out.println(weatherCityCodeList.size());
-        weatherCityCodeListByDistrict  = DataSupport.where("cityZh=?",district).find(WeatherCityCode.class);
-        weatherCityCodeListByCity = DataSupport.where("leaderZh=?",city).find(WeatherCityCode.class);
-        Log.d("pei","根据district查询出来的数据大小"+weatherCityCodeListByDistrict.size());
-        Log.d("pei","根据city查询出来的数据大小"+weatherCityCodeListByCity.size());
-        System.out.println("sadasdasd");
-        if (weatherCityCodeListByDistrict.size() > 0){
-            mWeatherId = weatherCityCodeListByDistrict.get(0).getWeatherCityId();
-            Log.d("pei","第一个麻麻："+mWeatherId);
-            requestWeather(mWeatherId);
 
 
-        }else if (weatherCityCodeListByCity.size() > 0){
-            mWeatherId = weatherCityCodeListByCity.get(0).getWeatherCityId();
-            Log.d("pei","第一个麻麻："+mWeatherId);
-            requestWeather(mWeatherId);
-        }else {
-            //数据库无缓存 从服务获取json对应码
-            String address = queryAPI.getWeatherCityCodeUrl;
-            queryFromServer(address);
-        }
-    }
-
-    //从服务器查询json对应码
-    private void queryFromServer(final String address){
-        Log.d("pei","从服务器查询json对应码");
-        HttpUtil.sendOkHttpRequest(address, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        Toast.makeText(WeatherActivity.this, "加载失败", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                boolean resultOk = false;
-                String responseText = response.body().string();
-                resultOk = Utility.handleWeatherCodeResponse(responseText);
-                Log.d("pei","执行到了handleWeatherCodeResponse");
-                if (resultOk){
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            queryWeatherCodeByDistrict(district, city);
-
-                        }
-                    });
-                }
-            }
-        });
-    }
 
 
     /**
      * 根据天气id请求城市天气信息。
      */
-    public void requestWeather(final String weatherId) {
-        Log.d("pei","第二个麻麻："+weatherId);
-        String weatherUrl = queryAPI.weatherUrl + weatherId + "&key=" + queryAPI.userKey;
+    public void requestWeather(final String weatherLocal) {
+        Log.d("matao","第二个麻麻："+weatherLocal);
+        String weatherUrl = queryAPI.queryRes + weatherLocal;
         HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 final String responseText = response.body().string();
+                Log.d("matao",responseText);
                 final Weather weather = Utility.handleWeatherResponse(responseText);
+                Log.d("matao",weather.toString());
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (weather != null && "ok".equals(weather.status)) {
+                        if (weather != null && weather.getStatus() == 1000) {
                             SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this).edit();
                             editor.putString("weather", responseText);
                             editor.apply();
-                            mWeatherId = weather.basic.weatherId;
+                            //mWeatherId = weather.basic.weatherId;
                             showWeatherInfo(weather);
                             //启动服务
 //                            Intent intent = new Intent(WeatherActivity.this, NotificationService.class);
@@ -351,35 +284,35 @@ public class WeatherActivity extends BasicActivity {
      * 处理并展示Weather实体类中的数据。
      */
     private void showWeatherInfo(Weather weather) {
-        String cityName = weather.basic.cityName;
-        String updateTime = weather.basic.update.updateTime.split(" ")[1];
-        String degree = weather.now.temperature + "℃";
-        String weatherInfo = weather.now.more.info;
+        String cityName = weather.data.city;
+        String updateTime = weather.data.forecastList.get(0).date;
+        String degree = weather.data.forecastList.get(0).high;
+        String weatherInfo = weather.data.forecastList.get(0).forecastType;
         titleCity.setText(cityName);
         titleUpdateTime.setText(updateTime);
         degreeText.setText(degree);
         weatherInfoText.setText(weatherInfo);
         forecastLayout.removeAllViews();
-        for (Forecast forecast : weather.forecasts) {
+        for (Forecast forecast : weather.data.forecastList) {
             View view = LayoutInflater.from(this).inflate(R.layout.forecast_item, forecastLayout, false);
             TextView dateText = (TextView) view.findViewById(R.id.date_text);
             TextView infoText = (TextView) view.findViewById(R.id.info_text);
             TextView maxText = (TextView) view.findViewById(R.id.max_text);
             TextView minText = (TextView) view.findViewById(R.id.min_text);
             dateText.setText(forecast.date);
-            infoText.setText(forecast.more.info);
-            maxText.setText(forecast.temperature.max);
-            minText.setText(forecast.temperature.min);
+            infoText.setText(forecast.fengxiang);
+            maxText.setText(forecast.high);
+            minText.setText(forecast.low);
             Log.d("pei","下拉刷新");
             forecastLayout.addView(view);
         }
-        if (weather.aqi != null) {
-            aqiText.setText(weather.aqi.city.aqi);
-            pm25Text.setText(weather.aqi.city.pm25);
+        if (weather.data.aqi != null) {
+            aqiText.setText(weather.data.aqi);
+            pm25Text.setText(weather.data.aqi);
         }
-        String comfort = "舒适度：" + weather.suggestion.comfort.info;
-        String carWash = "洗车指数：" + weather.suggestion.carWash.info;
-        String sport = "运行建议：" + weather.suggestion.sport.info;
+        String comfort = "舒适度：" + weather.data.ganmao;
+        String carWash = "洗车指数：" + weather.data.ganmao;
+        String sport = "运行建议：" + weather.data.ganmao;
         comfortText.setText(comfort);
         carWashText.setText(carWash);
         sportText.setText(sport);
